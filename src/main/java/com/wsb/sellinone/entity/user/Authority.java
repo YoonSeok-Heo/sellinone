@@ -1,0 +1,32 @@
+package com.wsb.sellinone.entity.user;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Authority {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    private Long id;
+
+    private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userEntity")
+    @JsonIgnore
+    private UserEntity userEntity;
+
+    public void setMember(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
+}
