@@ -2,15 +2,17 @@ package com.wsb.sellinone.jwt;
 
 import com.wsb.sellinone.entity.user.Authority;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SigningKeyResolver;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -60,8 +62,8 @@ public class JwtProvider {
      * @return
      */
     public Authentication getAuthentication(String token){
-        JwtUserDetails jwtUserDetails = jwtUserDetailsService.loadUserByUsername(this.getUsername());
-        return new UsernamePasswordAuthenticationToken(jwtUserDetails, "", jwtUserDetails.getAuthorities());
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(this.getUsername(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     /**
@@ -77,5 +79,40 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+
+    /**
+     * HttpServletRequest Header에서 토큰을 가져온다.
+     * @param request
+     * @return JWT값 리턴
+     */
+    public String resolveToken(HttpServletRequest request){
+        return request.getHeader(JwtProperties.HEADER_STRING);
+    }
+
+    /**
+     * 토큰 검증
+     * @param token
+     * @return boolean
+     */
+    public boolean vatlidateToken(String token){
+        try{
+            if(!token.substring(0, JwtProperties.TOKEN_PREFIX.length())
+                    .equalsIgnoreCase(JwtProperties.TOKEN_PREFIX)) {
+                return false;
+            } else {
+                token = token.split(" ")[1].trim();
+            }
+            Jws<Claims> claims = Jwts
+                    .parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
+
+            return !claims.getBody().getExpiration().before(new Date());
+        }catch (Exception e) {
+            return false;
+        }
     }
 }

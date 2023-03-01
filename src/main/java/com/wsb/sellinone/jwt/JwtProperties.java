@@ -5,6 +5,6 @@ package com.wsb.sellinone.jwt;
  */
 public class JwtProperties {
     public static final long EXPIRATION_TIME = 36000000; // 10시간
-    public static final String HEADER_STRING = "JWT-AUTHENTICATION";
+    public static final String HEADER_STRING = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
 }

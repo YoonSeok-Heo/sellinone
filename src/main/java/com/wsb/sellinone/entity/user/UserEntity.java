@@ -23,6 +23,9 @@ public class UserEntity {
     private String password;
 
     @Column(nullable = false)
+    private String phone;
+
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -32,6 +35,10 @@ public class UserEntity {
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();
 
+    @Column(nullable = false)
+    private LocalDateTime joinDate;
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate;
     private LocalDateTime serviceLife;
 
 }
