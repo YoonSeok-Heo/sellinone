@@ -1,15 +1,18 @@
 package com.wsb.sellinone.dto.user;
 
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter
 @Setter
+@ToString
 public class SignRequestDto {
 
-    private String usernaeme;
+    private String username;
 
     private String password;
 

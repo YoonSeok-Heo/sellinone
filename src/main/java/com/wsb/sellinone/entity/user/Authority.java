@@ -22,11 +22,11 @@ public class Authority {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userEntity")
+    @JoinColumn(name = "username")
     @JsonIgnore
-    private UserEntity userEntity;
+    private UserEntity username;
 
     public void setMember(UserEntity userEntity) {
-        this.userEntity = userEntity;
+        this.username = userEntity;
     }
 }

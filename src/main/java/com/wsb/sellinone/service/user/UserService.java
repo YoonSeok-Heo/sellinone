@@ -1,6 +1,7 @@
 package com.wsb.sellinone.service.user;
 
 
+import com.wsb.sellinone.common.ApiResponse;
 import com.wsb.sellinone.common.Utils;
 import com.wsb.sellinone.dto.user.SignRequestDto;
 import com.wsb.sellinone.dto.user.SignResponseDto;
@@ -30,7 +31,7 @@ public class UserService {
    private final JwtProvider jwtProvider;
 
    public SignResponseDto login(SignRequestDto request){
-       UserEntity userEntity = userRepository.findByUsername(request.getUsernaeme()).orElseThrow(() ->
+       UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(() ->
                new BadCredentialsException("잘못된 계정정보입니다."));
 
        if(!passwordEncoder.matches(request.getPassword(), userEntity.getPassword())){
@@ -38,32 +39,47 @@ public class UserService {
        }
 
        return SignResponseDto.builder()
-               .usernaeme(userEntity.getUsernaeme())
+               .username(userEntity.getUsername())
                .name(userEntity.getName())
                .email(userEntity.getEmail())
                .phone(userEntity.getPhone())
                .build();
    }
 
-   public boolean join(SignRequestDto request) throws Exception {
+   public ApiResponse join(SignRequestDto request) {
+
+       ApiResponse apiResponse = null;
        try{
            UserEntity userEntity = UserEntity.builder()
-                   .usernaeme(request.getUsernaeme())
-                   .password(request.getPassword())
+                   .username(request.getUsername())
+                   .password(passwordEncoder.encode(request.getPassword()))
                    .phone(request.getPhone())
                    .email(request.getEmail())
                    .name(request.getName())
-                   .joinDate(LocalDateTime.parse(Utils.retDate(Utils.SEND_TIME)))
-                   .lastModifiedDate(LocalDateTime.parse(Utils.retDate(Utils.SEND_TIME)))
+                   .joinDate(Utils.retDate(Utils.SEND_TIME))
+                   .lastModifiedDate(Utils.retDate(Utils.SEND_TIME))
                    .build();
 
-           userEntity.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
+           userEntity.setRoles(Collections.singletonList(Authority.builder()
+                   .name("ROLE_USER")
+                   .build()));
 
            userRepository.save(userEntity);
+
+           SignResponseDto signResponseDto = SignResponseDto.builder()
+                   .username(userEntity.getUsername())
+                   .name(userEntity.getName())
+                   .email(userEntity.getEmail())
+                   .build();
+
+           apiResponse = new ApiResponse(200, "회원 가입 성공");
+           apiResponse.putData("data", signResponseDto);
+
        }catch (Exception e){
-           log.error("join: " + e.getMessage());
-           throw new Exception("잘못된 요청입니다.");
+           log.error("UserService join: " + e.getMessage());
+           log.error("{}", e.getStackTrace());
+           apiResponse = new ApiResponse(400, "회원 가입 실패");
        }
-       return true;
+       return apiResponse;
    }
 }

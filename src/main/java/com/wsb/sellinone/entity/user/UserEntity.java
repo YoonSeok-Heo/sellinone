@@ -3,6 +3,7 @@ package com.wsb.sellinone.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.domain.Persistable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,10 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="user")
-public class UserEntity {
+public class UserEntity implements Persistable<String> {
 
     @Id
-    private String usernaeme;
+    private String username;
 
     @Column(nullable = false)
     private String password;
@@ -31,14 +32,28 @@ public class UserEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "username", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();
 
-    @Column(nullable = false)
-    private LocalDateTime joinDate;
-    @Column(nullable = false)
-    private LocalDateTime lastModifiedDate;
-    private LocalDateTime serviceLife;
+    public void setRoles(List<Authority> role){
+        this.roles = role;
+        role.forEach(o -> o.setMember(this));
+    }
 
+    @Column(nullable = false)
+    private String joinDate;
+    @Column(nullable = false)
+    private String lastModifiedDate;
+    private String serviceLife;
+
+    @Override
+    public String getId() {
+        return username;
+    }
+
+    @Override
+    public boolean isNew() {
+        return true;
+    }
 }

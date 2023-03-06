@@ -37,7 +37,7 @@ public class JwtUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userEntity.getUsernaeme();
+        return userEntity.getUsername();
     }
 
     @Override

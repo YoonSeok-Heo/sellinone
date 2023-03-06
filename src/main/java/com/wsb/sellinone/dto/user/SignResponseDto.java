@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SignResponseDto {
 
-    private String usernaeme;
+    private String username;
 
     private String phone;
 
@@ -28,7 +28,7 @@ public class SignResponseDto {
     private String token;
 
     public SignResponseDto(UserEntity user){
-        this.usernaeme = user.getUsernaeme();
+        this.username = user.getUsername();
         this.phone = user.getPhone();
         this.email = user.getEmail();
         this.name = user.getName();
