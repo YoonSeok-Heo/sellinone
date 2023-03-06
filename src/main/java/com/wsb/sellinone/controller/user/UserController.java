@@ -1,6 +1,7 @@
 package com.wsb.sellinone.controller.user;
 
 import com.wsb.sellinone.common.ApiResponse;
+import com.wsb.sellinone.dto.user.JoinRequestDto;
 import com.wsb.sellinone.dto.user.SignRequestDto;
 import com.wsb.sellinone.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("")
-    public ResponseEntity<ApiResponse> join (@RequestBody SignRequestDto signRequestDto) throws Exception {
-        log.info("UserController join : {}", signRequestDto.toString());
-        ApiResponse apiResponse = userService.join(signRequestDto);
+    public ResponseEntity<ApiResponse> join (@RequestBody JoinRequestDto joinRequestDto) throws Exception {
+        log.info("UserController join : {}", joinRequestDto.toString());
+        ApiResponse apiResponse = userService.join(joinRequestDto);
 
         return new ResponseEntity(apiResponse, HttpStatus.OK);
     }

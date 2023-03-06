@@ -3,6 +3,8 @@ package com.wsb.sellinone.service.user;
 
 import com.wsb.sellinone.common.ApiResponse;
 import com.wsb.sellinone.common.Utils;
+import com.wsb.sellinone.dto.user.JoinRequestDto;
+import com.wsb.sellinone.dto.user.JoinResponseDto;
 import com.wsb.sellinone.dto.user.SignRequestDto;
 import com.wsb.sellinone.dto.user.SignResponseDto;
 import com.wsb.sellinone.entity.user.Authority;
@@ -46,7 +48,7 @@ public class UserService {
                .build();
    }
 
-   public ApiResponse join(SignRequestDto request) {
+   public ApiResponse join(JoinRequestDto request) {
 
        ApiResponse apiResponse = null;
        try{
@@ -66,14 +68,14 @@ public class UserService {
 
            userRepository.save(userEntity);
 
-           SignResponseDto signResponseDto = SignResponseDto.builder()
+           JoinResponseDto joinResponseDto = JoinResponseDto.builder()
                    .username(userEntity.getUsername())
                    .name(userEntity.getName())
                    .email(userEntity.getEmail())
                    .build();
 
            apiResponse = new ApiResponse(200, "회원 가입 성공");
-           apiResponse.putData("data", signResponseDto);
+           apiResponse.putData("data", joinResponseDto);
 
        }catch (Exception e){
            log.error("UserService join: " + e.getMessage());
