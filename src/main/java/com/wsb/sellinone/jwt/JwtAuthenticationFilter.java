@@ -1,36 +1,54 @@
 package com.wsb.sellinone.jwt;
 
+import com.wsb.sellinone.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-/**
- * Jwt 유효성 검증하는 Filter
- */
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+@Slf4j
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final JwtProvider jwtProvider;
+    private final AuthenticationManager authenticationManager;
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider){
-        this.jwtProvider = jwtProvider;
+    private final UserRepository userRepository;
+
+    @Override
+    public Authentication attemptAuthentication(
+            HttpServletRequest request
+            , HttpServletResponse response
+    ) throws AuthenticationException {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                request.getParameter("username"),
+                request.getParameter("password"),
+                new ArrayList<>()
+        );
+        return authenticationManager.authenticate(authenticationToken);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = jwtProvider.resolveToken(request);
-
-        if(token != null && jwtProvider.vatlidateToken(token)){
-            token = token.split(" ")[1].trim();
-            Authentication auth = jwtProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
-        filterChain.doFilter(request, response);
+    protected void successfulAuthentication(
+            HttpServletRequest request
+            , HttpServletResponse response
+            , FilterChain chain
+            , Authentication authResult
+    ) throws IOException, ServletException {
+        super.successfulAuthentication(request, response, chain, authResult);
     }
 
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        super.unsuccessfulAuthentication(request, response, failed);
+    }
 }

@@ -5,14 +5,12 @@ import com.wsb.sellinone.dto.user.JoinRequestDto;
 import com.wsb.sellinone.dto.user.LoginRequestDto;
 import com.wsb.sellinone.dto.user.SignRequestDto;
 import com.wsb.sellinone.service.user.UserService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,6 +34,12 @@ public class UserController {
         ApiResponse apiResponse = userService.login(loginRequest);
 
         return new ResponseEntity(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<ApiResponse> test(){
+
+        return new ResponseEntity(new ApiResponse(), HttpStatus.OK);
     }
 
 }

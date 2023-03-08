@@ -1,7 +1,7 @@
 package com.wsb.sellinone.configuration;
 
 
-import com.wsb.sellinone.jwt.JwtAuthenticationFilter;
+import com.wsb.sellinone.jwt.JwtAuthenticationFilter_2;
 import com.wsb.sellinone.jwt.JwtProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,9 +45,9 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
 
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter_2(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exception) -> exception
                         .accessDeniedHandler(new AccessDeniedHandler() {
                             @Override
