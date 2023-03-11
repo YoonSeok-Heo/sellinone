@@ -1,6 +1,7 @@
 package com.wsb.sellinone.jwt;
 
 import com.wsb.sellinone.entity.user.UserEntity;
+import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+@Builder
 public class JwtUserDetails implements UserDetails {
 
     private final UserEntity userEntity;
