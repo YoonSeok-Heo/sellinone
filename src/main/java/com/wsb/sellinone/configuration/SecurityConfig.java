@@ -1,8 +1,9 @@
 package com.wsb.sellinone.configuration;
 
 
-import com.wsb.sellinone.jwt.JwtAuthenticationFilter_2;
+import com.wsb.sellinone.jwt.JwtAuthenticationFilter;
 import com.wsb.sellinone.jwt.JwtProvider;
+import com.wsb.sellinone.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,8 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -20,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 
@@ -30,6 +32,7 @@ import java.io.IOException;
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,6 +42,8 @@ public class SecurityConfig {
                 .cors().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .apply(new MyCustomDsl())
+                .and()
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
                         .requestMatchers("/accessDeniedPage").permitAll()
@@ -47,7 +52,7 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter_2(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JwtAuthenticationFilter_2(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exception) -> exception
                         .accessDeniedHandler(new AccessDeniedHandler() {
                             @Override
@@ -72,7 +77,21 @@ public class SecurityConfig {
                 );
         return http.build();
     }
+    public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
 
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+            http
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager, userRepository, jwtProvider))
+//                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
+            ;
+        }
+
+        public MyCustomDsl customDsl() {
+            return new MyCustomDsl();
+        }
+    }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
