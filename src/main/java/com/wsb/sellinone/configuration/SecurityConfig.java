@@ -2,6 +2,7 @@ package com.wsb.sellinone.configuration;
 
 
 import com.wsb.sellinone.jwt.JwtAuthenticationFilter;
+import com.wsb.sellinone.jwt.JwtAuthorizationFilter;
 import com.wsb.sellinone.jwt.JwtProvider;
 import com.wsb.sellinone.repository.UserRepository;
 import jakarta.servlet.ServletException;
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 //                .addFilterBefore(new JwtAuthenticationFilter_2(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+
                 .exceptionHandling((exception) -> exception
                         .accessDeniedHandler(new AccessDeniedHandler() {
                             @Override
@@ -84,7 +86,7 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http
                     .addFilter(new JwtAuthenticationFilter(authenticationManager, userRepository, jwtProvider))
-//                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, jwtProvider))
             ;
         }
 

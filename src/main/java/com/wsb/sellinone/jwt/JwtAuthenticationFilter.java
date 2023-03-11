@@ -56,20 +56,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             , HttpServletResponse response
             , FilterChain chain
             , Authentication authResult
-    ) throws IOException, ServletException {
+    ) throws IOException{
         JwtUserDetails jwtUserDetails = (JwtUserDetails) authResult.getPrincipal();
-        log.info("successfulAuthentication : {}", jwtUserDetails.getUserEntity().toString());
         String token = jwtProvider.createToken(jwtUserDetails.getUsername(), jwtUserDetails.getUserEntity().getRoles());
-        log.info("successfulAuthentication token : {}", token);
 
         // 헤더에 토큰 추가
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + token);
-
-        // 바디에 추가 리스폰스 내용 추가
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
-
-        ApiResponse apiResponse = new ApiResponse(200, "로그인 성공");
 
         // 유저 정보 추가
         UserEntity userEntity = jwtUserDetails.getUserEntity();
@@ -81,7 +73,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .build()
                 ;
 
-        // 데이터 넣기
+        // 바디에 추가 리스폰스 내용 추가
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+
+        // Response 데이터 넣기
+        ApiResponse apiResponse = new ApiResponse(200, "로그인 성공");
         apiResponse.putData("data", responseUserDto);
 
         String resString = mapper.writeValueAsString(apiResponse);
