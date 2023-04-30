@@ -42,10 +42,19 @@ public class UserEntity implements Persistable<String> {
     }
 
     @Column(nullable = false)
-    private String joinDate;
+    private LocalDateTime joinDate;
+
     @Column(nullable = false)
-    private String lastModifiedDate;
+    private LocalDateTime lastModifiedDate;
+
+    @Column
     private String serviceLife;
+
+    @Column
+    private String couAccessKey;
+
+    @Column
+    private String couSecretKey;
 
     @Override
     public String getId() {

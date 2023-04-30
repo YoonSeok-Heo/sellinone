@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 @Slf4j
@@ -62,10 +63,9 @@ public class UserService {
                    .phone(request.getPhone())
                    .email(request.getEmail())
                    .name(request.getName())
-                   .joinDate(Utils.retDate(Utils.SEND_TIME))
-                   .lastModifiedDate(Utils.retDate(Utils.SEND_TIME))
+                   .joinDate(LocalDateTime.now())
+                   .lastModifiedDate(LocalDateTime.now())
                    .build();
-
            userEntity.setRoles(Collections.singletonList(Authority.builder()
                    .name("ROLE_USER")
                    .build()));
@@ -83,7 +83,7 @@ public class UserService {
 
        }catch (Exception e){
            log.error("UserService join: " + e.getMessage());
-           log.error("{}", e.getStackTrace());
+//           log.error("{}", e.getStackTrace());
            apiResponse = new ApiResponse(400, "회원 가입 실패");
        }
        return apiResponse;

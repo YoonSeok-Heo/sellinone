@@ -23,7 +23,7 @@ public class UserController {
         log.info("UserController join : {}", joinRequestDto.toString());
         ApiResponse apiResponse = userService.join(joinRequestDto);
 
-        return new ResponseEntity(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -31,13 +31,13 @@ public class UserController {
         log.info("UserController login : {}", loginRequest.toString());
         ApiResponse apiResponse = userService.login(loginRequest);
 
-        return new ResponseEntity(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
     }
 
     @GetMapping("")
     public ResponseEntity<ApiResponse> test(){
 
-        return new ResponseEntity(new ApiResponse(), HttpStatus.OK);
+        return new ResponseEntity<ApiResponse>(new ApiResponse(), HttpStatus.OK);
     }
 
 }
