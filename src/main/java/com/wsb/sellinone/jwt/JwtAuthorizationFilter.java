@@ -39,11 +39,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             HttpServletResponse response,
             FilterChain chain
     ) throws IOException, ServletException {
+
         String token = null;
+        String header;
+
         try {
             // header 에서 JWT token을 가져옵니다.
-            String header = request.getHeader(JwtProperties.HEADER_STRING);
-            if (header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)) {
+            header = request.getHeader(JwtProperties.HEADER_STRING);
+            if (header == null
+                    || !header.startsWith(JwtProperties.TOKEN_PREFIX)
+            ) {
                 chain.doFilter(request, response);
                 return;
             }
@@ -54,8 +59,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         if (token != null) {
-            Authentication authentication = getUsernamePasswordAuthenticationToken(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authentication
+                    = getUsernamePasswordAuthenticationToken(token);
+            SecurityContextHolder
+                    .getContext()
+                    .setAuthentication(authentication);
         }
         chain.doFilter(request, response);
     }
@@ -64,7 +72,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
      * JWT 토큰으로 User를 찾아서 UsernamePasswordAuthenticationToken를 만들어서 반환한다.
      * User가 없다면 null
      */
-    private Authentication getUsernamePasswordAuthenticationToken(String token) {
+    private Authentication getUsernamePasswordAuthenticationToken(
+            String token
+    ) {
+
         String username = jwtProvider.getUsername(token);
         if (username != null) {
             return jwtProvider.getAuthentication(token);
