@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="user")
@@ -32,7 +33,10 @@ public class UserEntity implements Persistable<String> {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "username", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "username",
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL
+    )
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();
 
