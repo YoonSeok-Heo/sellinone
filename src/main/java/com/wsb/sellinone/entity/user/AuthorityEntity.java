@@ -7,20 +7,30 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+import java.time.LocalDateTime;
+
+@Entity(name="authority")
+@IdClass(AuthorityKey.class)
+@Table(indexes = {
+        @Index(name = "idx_username", columnList = "username")
+})
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Authority {
+public class AuthorityEntity {
+
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @JsonIgnore
+//    private Long id;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    private Long id;
-
     private String name;
 
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username")
     @JsonIgnore
@@ -29,4 +39,7 @@ public class Authority {
     public void setMember(UserEntity userEntity) {
         this.username = userEntity;
     }
+
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate;
 }
