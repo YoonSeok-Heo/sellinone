@@ -5,7 +5,7 @@ import com.wsb.sellinone.common.ApiResponse;
 import com.wsb.sellinone.common.ErrorResponse;
 import com.wsb.sellinone.dto.user.LoginResponseDto;
 import com.wsb.sellinone.entity.user.UserEntity;
-import com.wsb.sellinone.repository.UserRepository;
+import com.wsb.sellinone.repository.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Slf4j
 public class JwtAuthenticationFilter

@@ -6,9 +6,9 @@ import com.wsb.sellinone.dto.user.GetRoleRequestDto;
 import com.wsb.sellinone.dto.user.JoinRequestDto;
 import com.wsb.sellinone.dto.user.LoginRequestDto;
 import com.wsb.sellinone.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,16 +50,28 @@ public class UserController {
 
     @PostMapping("/role")
     public ResponseEntity<ApiResponse> addRole(
-            HttpRequest httpRequest,
+            HttpServletRequest request,
             @RequestBody AddRoleRequestDto addRoleRequestDto
-    ) {
+            ) {
 
-        log.info("httpRequest : {}", httpRequest.toString());
-        log.info("AddRoleRequestDto : {}", addRoleRequestDto);
+//        ApiResponse apiResponse = new ApiResponse();
+        try {
+            log.info("addRoleRequestDto: {}", addRoleRequestDto);
+            log.info("Authorization: {}", request.getHeader("Authorization"));
 
-        ApiResponse apiResponse = userService.addRoles(httpRequest, addRoleRequestDto);
+            ApiResponse apiResponse
+                    = userService.addRoles(request, addRoleRequestDto);
 
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(
+                            HttpStatus.BAD_REQUEST.value(),
+                            e.getMessage()
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     @GetMapping("")

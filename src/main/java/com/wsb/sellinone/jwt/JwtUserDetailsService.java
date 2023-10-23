@@ -2,7 +2,7 @@ package com.wsb.sellinone.jwt;
 
 
 import com.wsb.sellinone.entity.user.UserEntity;
-import com.wsb.sellinone.repository.UserRepository;
+import com.wsb.sellinone.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

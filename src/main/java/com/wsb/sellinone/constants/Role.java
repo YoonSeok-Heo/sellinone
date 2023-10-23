@@ -1,9 +1,10 @@
 package com.wsb.sellinone.constants;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
-@Getter
 public enum Role {
 
     ROLE_ADMIN(0, "ROLE_ADMIN"),
@@ -17,4 +18,23 @@ public enum Role {
 
     private final int code;
     private final String roleName;
+
+    @JsonCreator
+    public static Role from(String roleName) {
+        for (Role role : Role.values()) {
+            if (role.getRoleName().equals(roleName)) {
+                return role;
+            }
+        }
+        return null;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    @JsonValue
+    public String getRoleName(){
+        return roleName;
+    }
 }

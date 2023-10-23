@@ -38,9 +38,9 @@ public class UserEntity implements Persistable<String> {
             cascade = CascadeType.ALL
     )
     @Builder.Default
-    private List<Authority> roles = new ArrayList<>();
+    private List<AuthorityEntity> roles = new ArrayList<>();
 
-    public void setRoles(List<Authority> role){
+    public void setRoles(List<AuthorityEntity> role){
         this.roles = role;
         role.forEach(o -> o.setMember(this));
     }

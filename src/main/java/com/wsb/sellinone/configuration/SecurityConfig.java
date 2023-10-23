@@ -6,8 +6,7 @@ import com.wsb.sellinone.common.ErrorResponse;
 import com.wsb.sellinone.jwt.JwtAuthenticationFilter;
 import com.wsb.sellinone.jwt.JwtAuthorizationFilter;
 import com.wsb.sellinone.jwt.JwtProvider;
-import com.wsb.sellinone.repository.UserRepository;
-import jakarta.servlet.Filter;
+import com.wsb.sellinone.repository.user.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -63,6 +62,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/join")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user/role")
+                        .permitAll()
                         .requestMatchers("/accessDeniedPage")
                         .permitAll()
                         .requestMatchers("/admin/**")
@@ -70,10 +71,6 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
-
-
-//                .addFilterBefore(new JwtAuthenticationFilter_2(jwtProvider), UsernamePasswordAuthenticationFilter.class)
-
                 .exceptionHandling((exception) -> exception
                         .accessDeniedHandler(new AccessDeniedHandler() {
                             @Override
@@ -81,7 +78,7 @@ public class SecurityConfig {
                                     HttpServletRequest request,
                                     HttpServletResponse response,
                                     AccessDeniedException accessDeniedException
-                            ) throws IOException, ServletException {
+                            ) throws IOException {
 
                                 String resString;
                                 ErrorResponse errorResponse = new ErrorResponse(
@@ -91,6 +88,9 @@ public class SecurityConfig {
                                 resString = mapper.writeValueAsString(
                                         errorResponse
                                 );
+
+                                log.info("accessDeniedException: {}",
+                                        accessDeniedException.getMessage());
 
                                 // 권한 문제가 발생했을 때 이 부분을 호출한다.
                                 response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -105,7 +105,7 @@ public class SecurityConfig {
                                     HttpServletRequest request,
                                     HttpServletResponse response,
                                     AuthenticationException authException
-                            ) throws IOException, ServletException {
+                            ) throws IOException {
 
                                 String resString;
                                 ErrorResponse errorResponse = new ErrorResponse(
@@ -122,7 +122,6 @@ public class SecurityConfig {
                                 // 인증문제가 발생했을 때 이 부분을 호출한다.
                                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                                 response.setCharacterEncoding("utf-8");
-//                                response.setContentType("text/html; charset=UTF-8");
                                 response.setContentType("application/json");
                                 response.getWriter().write(resString);
                             }
@@ -153,6 +152,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-
 
 }

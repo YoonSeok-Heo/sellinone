@@ -1,7 +1,6 @@
 package com.wsb.sellinone.jwt;
 
-import com.wsb.sellinone.entity.user.UserEntity;
-import com.wsb.sellinone.repository.UserRepository;
+import com.wsb.sellinone.repository.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

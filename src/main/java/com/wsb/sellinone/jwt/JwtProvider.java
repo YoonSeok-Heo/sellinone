@@ -1,14 +1,12 @@
 package com.wsb.sellinone.jwt;
 
-import com.wsb.sellinone.entity.user.Authority;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.wsb.sellinone.entity.user.AuthorityEntity;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +18,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
@@ -43,10 +42,10 @@ public class JwtProvider {
      * @param roles
      * @return
      */
-    public String createToken(String username, List<Authority> roles){
+    public String createToken(String username, List<AuthorityEntity> roles){
+        Date now = new Date();
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
-        Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -62,8 +61,15 @@ public class JwtProvider {
      * @return
      */
     public Authentication getAuthentication(String token){
-        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(this.getUsername(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        UserDetails userDetails
+                = jwtUserDetailsService.loadUserByUsername(
+                        this.getUsername(token)
+        );
+
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                "",
+                userDetails.getAuthorities());
     }
 
     /**
@@ -97,6 +103,7 @@ public class JwtProvider {
      * @return boolean
      */
     public boolean vatlidateToken(String token){
+
         try{
             if(!token.substring(0, JwtProperties.TOKEN_PREFIX.length())
                     .equalsIgnoreCase(JwtProperties.TOKEN_PREFIX)) {
@@ -113,6 +120,22 @@ public class JwtProvider {
             return !claims.getBody().getExpiration().before(new Date());
         }catch (Exception e) {
             return false;
+        }
+    }
+
+    public String removeTokenPrefix(String token){
+
+        String tokenPrefix
+                = token.substring(0, JwtProperties.TOKEN_PREFIX.length()
+        );
+
+        if (JwtProperties.TOKEN_PREFIX.equals(tokenPrefix)){
+            return token.substring(
+                    JwtProperties.TOKEN_PREFIX.length(),
+                    token.length()
+            );
+        } else {
+            return token;
         }
     }
 }
